@@ -7,6 +7,14 @@
 #include "util.h"
 
 /************************************************************************/
+/* Defines                                                              */
+/************************************************************************/
+#define LED_PIO_ID ID_PIOC
+#define LED_PIO PIOC
+#define LED_PIN 8
+#define LED_IDX_MASK (1 << LED_PIN)
+
+/************************************************************************/
 /* WIFI                                                                 */
 /************************************************************************/
 
@@ -79,6 +87,10 @@ extern void vApplicationMallocFailedHook(void){
 /************************************************************************/
 /* funcoes                                                              */
 /************************************************************************/
+void LED_init(int estado){
+	pmc_enable_periph_clk(LED_PIO_ID);
+	pio_set_output(LED_PIO, LED_IDX_MASK, estado, 0, 0);
+};
 
 /************************************************************************/
 /* callbacks                                                            */
@@ -284,9 +296,16 @@ static void task_process(void *pvParameters) {
         printf(STRING_LINE);
         printf(p_recvMsg->pu8Buffer);
         printf(STRING_EOL);  printf(STRING_LINE);
+		char *ledStatus = strstr(p_recvMsg->pu8Buffer, "led");
+		char status = ledStatus[7];
+		printf(STRING_LINE);
+		if (status ==  '1'){
+			pio_clear(LED_PIO, LED_IDX_MASK);
+		} else{
+			pio_set(LED_PIO, LED_IDX_MASK);
+		}
         state = DONE;
-      }
-      else {
+      } else {
         state = TIMEOUT;
       };
       break;
@@ -378,6 +397,8 @@ int main(void)
   /* Initialize the board. */
   sysclk_init();
   board_init();
+  LED_init(0);
+ 
 
   /* Initialize the UART console. */
   configure_console();

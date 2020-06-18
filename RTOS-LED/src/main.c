@@ -62,8 +62,7 @@ SemaphoreHandle_t xSemaphore3;
 #define TASK_LED3_STACK_SIZE (1024/sizeof(portSTACK_TYPE))
 #define TASK_LED3_STACK_PRIORITY (tskIDLE_PRIORITY)
 
-extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,
-		signed char *pcTaskName);
+extern void vApplicationStackOverflowHook(xTaskHandle *pxTask,signed char *pcTaskName);
 extern void vApplicationIdleHook(void);
 extern void vApplicationTickHook(void);
 extern void vApplicationMallocFailedHook(void);
